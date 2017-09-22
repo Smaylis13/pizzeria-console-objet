@@ -1,9 +1,13 @@
-package fr.pizzeria.console;
+package fr.pizzeria.dao;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.plaf.basic.BasicTreeUI.SelectionModelPropertyChangeHandler;
+
+import fr.pizzeria.console.Pizza;
+import fr.pizzeria.console.PizzeriaAdminConsoleApp;
+import fr.pizzeria.ihm.AjouterPizzaOptionMenu;
 
 /**
  * 
@@ -11,20 +15,63 @@ import javax.swing.plaf.basic.BasicTreeUI.SelectionModelPropertyChangeHandler;
  *
  *
  */
-public class Pizzas {
+public class PizzaDao implements IPizzaDao {
 
-	private List<Pizza> mPizzas = new ArrayList<Pizza>();
-	
+	private static List<Pizza> mListPizza;
+	public PizzaDao() {
+		if(mListPizza == null){
+		mListPizza = new ArrayList<>();
+		mListPizza.add(new Pizza("PEP", "Pépéroni", 12.5));
+		mListPizza.add(new Pizza( "MAR", "Margherita" ,14.00));
+		mListPizza.add(new Pizza( "REIN", "La Reine", 11.50));
+		mListPizza.add(new Pizza( "FRO", "La 4 fromages", 12.00));
+		mListPizza.add(new Pizza( "CAN", "La cannibale", 12.50));
+		mListPizza.add(new Pizza( "SAV" ,"La savoyarde" ,13.00));
+		mListPizza.add(new Pizza( "ORI", "L’orientale" ,13.50));
+		mListPizza.add(new Pizza( "IND", "L’indienne", 14.00));
+		}
+	}
+	@Override
+	public List<Pizza> findAllPizzas() {
+		// TODO Auto-generated method stub
+		return mListPizza;
+	}
+
+	@Override
+	public boolean saveNewPizza(Pizza pizza) {
+		// TODO Auto-generated method stub
+		return mListPizza.add(pizza);
+	}
+
+	@Override
+	public boolean updatePizza(String codePizza, Pizza pizza) {
+		// TODO Auto-generated method stub
+		for (int i = 0;  i < mListPizza.size() ; i++){
+			if(mListPizza.get(i).compCode(codePizza)){
+				mListPizza.set(i, pizza);
+				return true;
+			}
+		}
+		return false;
+	}
+
+	@Override
+	public boolean deletePizza(String codePizza) {
+
+		for (int i = 0;  i < mListPizza.size() ; i++){
+			if(mListPizza.get(i).compCode(codePizza)){
+				mListPizza.remove(i);
+				return true;
+			}
+		}
+		return false;
+	}
+
+	//private List<Pizza> mPizzas = new ArrayList<Pizza>();
+	/*
 	public Pizzas() {
 		super();
-		mPizzas.add(new Pizza("PEP", "Pépéroni", 12.5));
-		mPizzas.add(new Pizza( "MAR", "Margherita" ,14.00));
-		mPizzas.add(new Pizza( "REIN", "La Reine", 11.50));
-		mPizzas.add(new Pizza( "FRO", "La 4 fromages", 12.00));
-		mPizzas.add(new Pizza( "CAN", "La cannibale", 12.50));
-		mPizzas.add(new Pizza( "SAV" ,"La savoyarde" ,13.00));
-		mPizzas.add(new Pizza( "ORI", "L’orientale" ,13.50));
-		mPizzas.add(new Pizza( "IND", "L’indienne", 14.00));
+
 	}
 	public void delete(){
 		System.out.println("Veuillez choisir la pizza à supprimer :");
@@ -76,5 +123,6 @@ public class Pizzas {
 		for(Pizza p : mPizzas){
 			System.out.println(p.toString());
 		}
-	}
+	}*/
+
 }
