@@ -1,20 +1,19 @@
 package fr.pizzeria.ihm;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import fr.pizzeria.console.Pizza;
+import fr.pizzeria.dao.IPizzaDao;
+import fr.pizzeria.dao.PizzaDao;
+import fr.pizzeria.exception.StockageException;
+
 
 public abstract class OptionMenu {
 	
-	/*public OptionMenu(){
-		initListPizza();
-	}
+	protected IPizzaDao mDao;
 	
-	protected static List<Pizza> mPizzas = new ArrayList<Pizza>();
-	*/
 	public abstract String getLibelle();
-	public abstract void execute();
+	public abstract void execute() throws StockageException;
 	
 	/*private void initListPizza(){
 

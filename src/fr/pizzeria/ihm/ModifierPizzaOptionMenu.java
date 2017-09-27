@@ -4,6 +4,7 @@ import java.util.List;
 
 import fr.pizzeria.console.Pizza;
 import fr.pizzeria.console.PizzeriaAdminConsoleApp;
+import fr.pizzeria.dao.IPizzaDao;
 import fr.pizzeria.dao.PizzaDao;
 
 public class ModifierPizzaOptionMenu extends OptionMenu {
@@ -13,12 +14,14 @@ public class ModifierPizzaOptionMenu extends OptionMenu {
 		// TODO Auto-generated method stub
 		return "Modifier une Pizza :";
 	}
-	
+	public ModifierPizzaOptionMenu(IPizzaDao pDao){
+		mDao = pDao;
+	}
 	public void execute() {
 		// TODO Auto-generated method stub
-		PizzaDao lPizzaDao = new PizzaDao();
+		//PizzaDao lPizzaDao = new PizzaDao();
 		System.out.println("Veuillez choisir la pizza à modifier :");
-		List<Pizza> listPizza = lPizzaDao.findAllPizzas();
+		List<Pizza> listPizza = mDao.findAllPizzas();
 		afficherListPizzas(listPizza);
 		//System.out.println("(99 pour abandonnér)");
 		String code = PizzeriaAdminConsoleApp.sScanner.next();

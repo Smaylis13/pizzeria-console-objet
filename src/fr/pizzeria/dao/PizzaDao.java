@@ -8,6 +8,7 @@ import javax.swing.plaf.basic.BasicTreeUI.SelectionModelPropertyChangeHandler;
 import fr.pizzeria.console.Pizza;
 import fr.pizzeria.console.PizzeriaAdminConsoleApp;
 import fr.pizzeria.ihm.AjouterPizzaOptionMenu;
+import fr.pizzeria.model.CategoriePizza;
 
 /**
  * 
@@ -20,15 +21,15 @@ public class PizzaDao implements IPizzaDao {
 	private static List<Pizza> mListPizza;
 	public PizzaDao() {
 		if(mListPizza == null){
-		mListPizza = new ArrayList<>();
-		mListPizza.add(new Pizza("PEP", "Pépéroni", 12.5));
-		mListPizza.add(new Pizza( "MAR", "Margherita" ,14.00));
-		mListPizza.add(new Pizza( "REIN", "La Reine", 11.50));
-		mListPizza.add(new Pizza( "FRO", "La 4 fromages", 12.00));
-		mListPizza.add(new Pizza( "CAN", "La cannibale", 12.50));
-		mListPizza.add(new Pizza( "SAV" ,"La savoyarde" ,13.00));
-		mListPizza.add(new Pizza( "ORI", "L’orientale" ,13.50));
-		mListPizza.add(new Pizza( "IND", "L’indienne", 14.00));
+			mListPizza = new ArrayList<>();
+			mListPizza.add((new Pizza("PEP", "Pépéroni", 12.5)).setmCategorie(CategoriePizza.VIANDE));
+			mListPizza.add(new Pizza( "MAR", "Margherita" ,14.00));
+			mListPizza.add(new Pizza( "REIN", "La Reine", 11.50));
+			mListPizza.add(new Pizza( "FRO", "La 4 fromages", 12.00));
+			mListPizza.add(new Pizza( "CAN", "La cannibale", 12.50));
+			mListPizza.add(new Pizza( "SAV" ,"La savoyarde" ,13.00));
+			mListPizza.add(new Pizza( "ORI", "L’orientale" ,13.50));
+			mListPizza.add(new Pizza( "IND", "L’indienne", 14.00));
 		}
 	}
 	@Override

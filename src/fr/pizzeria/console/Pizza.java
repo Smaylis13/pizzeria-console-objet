@@ -1,21 +1,51 @@
 package fr.pizzeria.console;
 
-import fr.pizzeria.dao.IPizzaDao;
 
+import java.lang.reflect.Field;
+
+import fr.pizzeria.dao.IPizzaDao;
+import fr.pizzeria.model.CategoriePizza;
+import fr.pizzeria.model.ToString;
+/**
+ * 
+ * @author ETY23
+ *
+ */
 public class Pizza {
 	private int mId;
+	
+	@ToString
 	private String mCode;
+	
+	@ToString(uppercase=true)
 	private String mNom;
+	
 	private double mPrix;
+	/**
+	 * sID un id static qui s'incrémente à chaque ajout de pizza 
+	 */
 	private static int sID = 0;
+	CategoriePizza mCategorie;
 	public Pizza(String pCode,String pNom, double pPrix){
 		  mId = sID;
+		  System.out.println("Mon id est : "+mId);
 		  sID++;
 		  mCode = pCode;
 		  mNom = pNom;
 		  mPrix = pPrix;
 	}
+	public Pizza(String pCode,String pNom, double pPrix, CategoriePizza pCategorie) {
+		this(pCode, pNom, pPrix);
+		mCategorie = pCategorie;
+	}
 	
+	public CategoriePizza getmCategorie() {
+		return mCategorie;
+	}
+	public Pizza setmCategorie(CategoriePizza mCategorie) {
+		this.mCategorie = mCategorie;
+		return this;
+	}
 	public Pizza() {
 		// TODO Auto-generated constructor stub
 		this("EEE","EEEEEE",0.2);
@@ -67,7 +97,28 @@ public class Pizza {
 	@Override
 	public String toString() {
 		// TODO Auto-generated method stub
-		return mCode+" -> "+mNom+" ("+String.format("%.2f", mPrix)+"€)";
+		String returnString = " ";
+		///String returnString = mCode+" -> "+mNom+" ("+String.format("%.2f", mPrix)+"€) Catégorie : " + mCategorie;
+		for (Field f : this.getClass().getDeclaredFields()){
+			try{
+				if( f.get(this) instanceof String){
+					if(f.getAnnotation(ToString.class) != null && f.getAnnotation(ToString.class).uppercase()){
+						String tmp = (String) f.get(this);
+						returnString +=  tmp.toUpperCase()+ " ";
+					}else{
+						returnString +=  (String) f.get(this) + " ";
+					}
+				}else{
+					if( f.getName().equals("mPrix"))
+						returnString += " ("+String.format("%.2f", mPrix)+"€) " ;
+					else if (f.getName().equals("mCategorie"))
+						returnString +=  f.get(this);
+				}
+			}catch (Exception e) {
+				e.getStackTrace();
+			}
+		}
+		return returnString;
 	}
 
 
