@@ -27,7 +27,7 @@ public class PizzeriaAdminConsoleApp {
 		OptionMenu optionMenu;
 		PizzaDao pizzaDao = new PizzaDao();
 
-		boolean exit = true //erreur test ! 
+		bolean exit = true //erreur test ! 
 		ListerPizzasOptionMenu listerPizzasOptionMenu = new ListerPizzasOptionMenu(pizzaDao);
 		AjouterPizzaOptionMenu add = new AjouterPizzaOptionMenu(pizzaDao);
 		ModifierPizzaOptionMenu upd = new ModifierPizzaOptionMenu(pizzaDao);
