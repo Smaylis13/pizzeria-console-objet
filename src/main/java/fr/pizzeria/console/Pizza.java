@@ -28,7 +28,6 @@ public class Pizza {
 	CategoriePizza mCategorie;
 	public Pizza(String pCode,String pNom, double pPrix){
 		  mId = sID;
-		  System.out.println("Mon id est : "+mId);
 		  sID++;
 		  mCode = pCode;
 		  mNom = pNom;
