@@ -12,9 +12,11 @@ public class SupprimerPizzaOptionMenu extends OptionMenu {
 	public String getLibelle() {
 		return null;
 	}
-	public SupprimerPizzaOptionMenu(IPizzaDao pDao){
+
+	public SupprimerPizzaOptionMenu(IPizzaDao pDao) {
 		mDao = pDao;
 	}
+
 	@Override
 	public void execute() {
 		List<Pizza> lListPizza = mDao.findAllPizzas();
@@ -22,22 +24,18 @@ public class SupprimerPizzaOptionMenu extends OptionMenu {
 		afficherListPizzas(lListPizza);
 		System.out.println("(99 pour abandonnér)");
 		String code = PizzeriaAdminConsoleApp.sScanner.next();
-		if(!code.equals("99")){
-			for (int i = 0 ; i < lListPizza.size() ; i++){
+		if (!code.equals("99")) {
+			for (int i = 0; i < lListPizza.size(); i++) {
 				Pizza p = lListPizza.get(i);
-				if(p.getmCode().equals(code.toUpperCase())){
-					if(lListPizza.remove(i) != null){
-						System.out.println("la pizza "+p+"a bien été supprimer" );
+				if (p.getmCode().equals(code.toUpperCase())) {
+					System.out.println("la pizza " + p + " va être supprimer");
+					PizzeriaAdminConsoleApp.sScanner.next();
+					if (mDao.deletePizza(p) && lListPizza.remove(i) != null) {
+						System.out.println("la pizza " + p + " a bien été supprimer");
 					}
 				}
 			}
 		}
 	}
-
-
-
-
-
-
 
 }

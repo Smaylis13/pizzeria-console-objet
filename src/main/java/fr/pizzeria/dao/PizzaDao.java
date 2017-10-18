@@ -75,7 +75,7 @@ public class PizzaDao implements IPizzaDao {
 		if (mListPizza.isEmpty()) {
 			LOG.info("Aucune pizza dans la base");
 		}
-		
+
 		em.close();
 		return mListPizza;
 	}
@@ -98,81 +98,51 @@ public class PizzaDao implements IPizzaDao {
 	 */
 	@Override
 	public boolean updatePizza(String codePizza, Pizza pizza) {
-		
+
 		EntityManager em = new DbManager().getEntityManagerFactory().createEntityManager();
-		if(mListPizza.isEmpty()){
+		if (mListPizza.isEmpty()) {
 			LOG.info("Liste pizza vide");
 			return true;
 		}
-		//Pizza pizzaBase = mListPizza.stream().filter(p -> p.getmCode().equals(codePizza)).collect(Collectors.toList()).get(0);
-		
+		// Pizza pizzaBase = mListPizza.stream().filter(p ->
+		// p.getmCode().equals(codePizza)).collect(Collectors.toList()).get(0);
+
 		em.getTransaction().begin();
 		em.merge(pizza);
-		/*
-		pizzaBase.setmCategorie(pizza.getmCategorie());
-		pizzaBase.setmCode(pizza.getmCode());
-		pizzaBase.setmNom(pizza.getmNom());
-		pizzaBase.setmPrix(pizza.getmPrix());
-		*/
-		
+
 		em.getTransaction().commit();
-		
+
 		em.close();
-		LOG.info("Tou***********************************************************************#######################################################");
-		LOG.info("Tou***********************************************************************#######################################################");
-		LOG.info("Tou***********************************************************************#######################################################");
-		LOG.info("Tou***********************************************************************#######################################################");
 
-		/////////////////////
-		/*for (int i = 0; i < mListPizza.size(); i++) {
-			if (mListPizza.get(i).compCode(codePizza)) {
-				mListPizza.set(i, pizza);
-				openConnection();
-				PreparedStatement lUpdatePizza = null;
-				try {
-					lUpdatePizza = connection
-							.prepareStatement("UPDATE PIZZA SET NAMEPIZZA=? PRICE=? WHERE CODEPIZZA=?");
-
-					lUpdatePizza.setString(1, pizza.getmNom());
-					lUpdatePizza.setDouble(2, pizza.getmPrix());
-					lUpdatePizza.setString(3, codePizza);
-					if (!lUpdatePizza.execute()) {
-						LOG.info("La pizza " + pizza.toString() + " a bien été modifiée ");
-					}
-				} catch (SQLException e) {
-					LOG.error(e.getMessage(),e);
-				} finally {
-
-					try {
-						if (lUpdatePizza != null) {
-							lUpdatePizza.close();
-						}
-					} catch (SQLException e) {
-						LOG.error(e.getMessage(),e);
-					}
-				}
-				closeConnection();
-				return true;
-			}
-		}*/
 		return false;
 	}
 
 	@Override
-	public boolean deletePizza(String codePizza) {
+	public boolean deletePizza(Pizza pizza) {
 
-		for (int i = 0; i < mListPizza.size(); i++) {
-			Pizza lPizza = mListPizza.get(i);
-			if (lPizza.compCode(codePizza)) {
-				mListPizza.remove(lPizza);
-				// #DB
-				if (deletePizzaDB(lPizza)) {
-					LOG.info("La pizza [" + lPizza + "] a bien été supprimée");
-				}
-				// #fin DB
-				return true;
-			}
+		/*Pizza pizza = mListPizza.stream().filter(p -> p.getmCode().equals(codePizza)).collect(Collectors.toList())
+				.get(0);*/
+		if (pizza != null) {
+			EntityManager em = new DbManager().getEntityManagerFactory().createEntityManager();
+
+			em.getTransaction().begin();
+
+			em.remove(em.contains(pizza) ? pizza : em.merge(pizza));
+			
+			em.getTransaction().commit();
+			
+			LOG.info("La pizza [" + pizza + "] a bien été supprimée");
+		
+			em.close();
+			return true;
 		}
+		/*
+		 * for (int i = 0; i < mListPizza.size(); i++) { Pizza lPizza =
+		 * mListPizza.get(i); if (lPizza.compCode(codePizza)) {
+		 * mListPizza.remove(lPizza); // #DB if (deletePizzaDB(lPizza)) {
+		 * LOG.info("La pizza [" + lPizza + "] a bien été supprimée"); } // #fin
+		 * DB return true; } }
+		 */
 		return false;
 	}
 
@@ -200,6 +170,5 @@ public class PizzaDao implements IPizzaDao {
 		return false;
 
 	}
-
 
 }
