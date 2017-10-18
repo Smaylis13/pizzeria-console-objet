@@ -1,13 +1,9 @@
 package fr.pizzeria.ihm;
 
-import java.util.List;
-
 import fr.pizzeria.console.Pizza;
 import fr.pizzeria.console.PizzeriaAdminConsoleApp;
 import fr.pizzeria.dao.IPizzaDao;
-import fr.pizzeria.dao.PizzaDao;
 import fr.pizzeria.exception.SavePizzaException;
-import fr.pizzeria.exception.StockageException;
 import fr.pizzeria.model.CategoriePizza;
 
 public class AjouterPizzaOptionMenu extends OptionMenu {
@@ -42,7 +38,7 @@ public class AjouterPizzaOptionMenu extends OptionMenu {
 			throw new SavePizzaException ("Veuillez entrer un prix.");
 		newPizza.setmPrix(prix);
 		System.out.println("Veuillez choisir une catégorie : ");
-		int i = 0;
+		int i = 1;
 		for ( Object o : CategoriePizza.values()){
 			System.out.println(i+" -> " + o);
 			i++;
@@ -52,7 +48,7 @@ public class AjouterPizzaOptionMenu extends OptionMenu {
 		newPizza.setmCategorie(CategoriePizza.valueOf(cat));
 		
 		System.out.println(newPizza);
-		//PizzaDao pizzaDao = new PizzaDao();
+
 		if ( ! mDao.saveNewPizza(newPizza))
 			throw new SavePizzaException ("Votre pizza n'a pas été ajouté :(");
 		afficherListPizzas(mDao.findAllPizzas());

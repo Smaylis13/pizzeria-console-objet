@@ -1,7 +1,7 @@
 package fr.pizzeria.model;
 
 public enum CategoriePizza {
-	VIANDE ("Viande"), POISSON("Poisson"), SANS_VIANDE("Sans Viande");
+	VIANDE ("Viande"),  SANS_VIANDE("Sans Viande"), POISSON("Poisson");
 	
 	private String name;
 	  //Constructeur
@@ -11,12 +11,13 @@ public enum CategoriePizza {
 	public static CategoriePizza valueOf(int i) {
 		// TODO Auto-generated method stub
 		switch (i) {
-		case 0:
-			return VIANDE;
 		case 1:
-			return POISSON;
+			return VIANDE;
 		case 2:
 			return SANS_VIANDE;
+		case 3:
+			return POISSON;
+		
 		}
 		return null;
 	}

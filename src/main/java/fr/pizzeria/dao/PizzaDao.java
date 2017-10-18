@@ -1,129 +1,205 @@
 package fr.pizzeria.dao;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ResourceBundle;
+import java.util.Scanner;
+import java.util.stream.Collectors;
 
-import javax.swing.plaf.basic.BasicTreeUI.SelectionModelPropertyChangeHandler;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
+import javax.persistence.Query;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import fr.pizzeria.console.Pizza;
 import fr.pizzeria.console.PizzeriaAdminConsoleApp;
-import fr.pizzeria.ihm.AjouterPizzaOptionMenu;
 import fr.pizzeria.model.CategoriePizza;
+import fr.pizzeria.persistence.DbManager;
 
 /**
  * 
- * @author ETY23
+ * @author IG
  *
  *
  */
 public class PizzaDao implements IPizzaDao {
 
-	private static List<Pizza> mListPizza;
-	public PizzaDao() {
-		if(mListPizza == null){
-			mListPizza = new ArrayList<>();
-			mListPizza.add((new Pizza("PEP", "Pépéroni", 12.5)).setmCategorie(CategoriePizza.VIANDE));
-			mListPizza.add(new Pizza( "MAR", "Margherita" ,14.00));
-			mListPizza.add(new Pizza( "REIN", "La Reine", 11.50));
-			mListPizza.add(new Pizza( "FRO", "La 4 fromages", 12.00));
-			mListPizza.add(new Pizza( "CAN", "La cannibale", 12.50));
-			mListPizza.add(new Pizza( "SAV" ,"La savoyarde" ,13.00));
-			mListPizza.add(new Pizza( "ORI", "L’orientale" ,13.50));
-			mListPizza.add(new Pizza( "IND", "L’indienne", 14.00));
+	private List<Pizza> mListPizza;
+	private Connection connection;
+
+	private static ResourceBundle bundle = ResourceBundle.getBundle("jdbc");
+	private static final Logger LOG = LoggerFactory.getLogger(PizzaDao.class);
+
+	private void openConnection() {
+		try {
+			connection = DriverManager.getConnection(bundle.getString("db.url"), "root", "");
+		} catch (SQLException e) {
+			throw new RuntimeException("Impossible de se connecter à la base de donnée");
+		} finally {
+
 		}
 	}
+
+	private void closeConnection() {
+		try {
+			if (connection != null)
+				connection.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public PizzaDao() {
+		mListPizza = new ArrayList<>();
+	}
+
+	/**
+	 * findAllPizzas retourne la liste des pizzas dans la base de donnée
+	 * 
+	 * @return List<Pizza>
+	 */
 	@Override
 	public List<Pizza> findAllPizzas() {
-		// TODO Auto-generated method stub
+		mListPizza.clear();
+		EntityManager em = new DbManager().getEntityManagerFactory().createEntityManager();
+
+		mListPizza = em.createQuery("FROM Pizza p").getResultList();
+		if (mListPizza.isEmpty()) {
+			LOG.info("Aucune pizza dans la base");
+		}
+		
+		em.close();
 		return mListPizza;
 	}
 
 	@Override
 	public boolean saveNewPizza(Pizza pizza) {
-		// TODO Auto-generated method stub
+
+		EntityManager em = new DbManager().getEntityManagerFactory().createEntityManager();
+
+		em.getTransaction().begin();
+		em.persist(pizza);
+		em.getTransaction().commit();
+
+		em.close();
 		return mListPizza.add(pizza);
 	}
 
+	/**
+	 * Mise à d'une Pizza dans la base de donnée en fonction de son CODE
+	 */
 	@Override
 	public boolean updatePizza(String codePizza, Pizza pizza) {
-		// TODO Auto-generated method stub
-		for (int i = 0;  i < mListPizza.size() ; i++){
-			if(mListPizza.get(i).compCode(codePizza)){
+		
+		EntityManager em = new DbManager().getEntityManagerFactory().createEntityManager();
+		if(mListPizza.isEmpty()){
+			LOG.info("Liste pizza vide");
+			return true;
+		}
+		//Pizza pizzaBase = mListPizza.stream().filter(p -> p.getmCode().equals(codePizza)).collect(Collectors.toList()).get(0);
+		
+		em.getTransaction().begin();
+		em.merge(pizza);
+		/*
+		pizzaBase.setmCategorie(pizza.getmCategorie());
+		pizzaBase.setmCode(pizza.getmCode());
+		pizzaBase.setmNom(pizza.getmNom());
+		pizzaBase.setmPrix(pizza.getmPrix());
+		*/
+		
+		em.getTransaction().commit();
+		
+		em.close();
+		LOG.info("Tou***********************************************************************#######################################################");
+		LOG.info("Tou***********************************************************************#######################################################");
+		LOG.info("Tou***********************************************************************#######################################################");
+		LOG.info("Tou***********************************************************************#######################################################");
+
+		/////////////////////
+		/*for (int i = 0; i < mListPizza.size(); i++) {
+			if (mListPizza.get(i).compCode(codePizza)) {
 				mListPizza.set(i, pizza);
+				openConnection();
+				PreparedStatement lUpdatePizza = null;
+				try {
+					lUpdatePizza = connection
+							.prepareStatement("UPDATE PIZZA SET NAMEPIZZA=? PRICE=? WHERE CODEPIZZA=?");
+
+					lUpdatePizza.setString(1, pizza.getmNom());
+					lUpdatePizza.setDouble(2, pizza.getmPrix());
+					lUpdatePizza.setString(3, codePizza);
+					if (!lUpdatePizza.execute()) {
+						LOG.info("La pizza " + pizza.toString() + " a bien été modifiée ");
+					}
+				} catch (SQLException e) {
+					LOG.error(e.getMessage(),e);
+				} finally {
+
+					try {
+						if (lUpdatePizza != null) {
+							lUpdatePizza.close();
+						}
+					} catch (SQLException e) {
+						LOG.error(e.getMessage(),e);
+					}
+				}
+				closeConnection();
 				return true;
 			}
-		}
+		}*/
 		return false;
 	}
 
 	@Override
 	public boolean deletePizza(String codePizza) {
 
-		for (int i = 0;  i < mListPizza.size() ; i++){
-			if(mListPizza.get(i).compCode(codePizza)){
-				mListPizza.remove(i);
+		for (int i = 0; i < mListPizza.size(); i++) {
+			Pizza lPizza = mListPizza.get(i);
+			if (lPizza.compCode(codePizza)) {
+				mListPizza.remove(lPizza);
+				// #DB
+				if (deletePizzaDB(lPizza)) {
+					LOG.info("La pizza [" + lPizza + "] a bien été supprimée");
+				}
+				// #fin DB
 				return true;
 			}
 		}
 		return false;
 	}
 
-	//private List<Pizza> mPizzas = new ArrayList<Pizza>();
-	/*
-	public Pizzas() {
-		super();
+	private boolean deletePizzaDB(Pizza p) {
+		openConnection();
+
+		Statement statement = null;
+		try {
+			statement = connection.createStatement();
+			String query = "DELETE FROM PIZZA WHERE PIZZA.ID = " + p.getId();
+
+			return statement.execute(query);
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (statement != null)
+					statement.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			closeConnection();
+		}
+		return false;
 
 	}
-	public void delete(){
-		System.out.println("Veuillez choisir la pizza à supprimer :");
-		afficher();
-		System.out.println("(99 pour abandonnér)");
-		String code = PizzeriaAdminConsoleApp.sScanner.next();
-		if(!code.equals("99")){
-			for (int i = 0 ; i < mPizzas.size() ; i++){
-				Pizza p = mPizzas.get(i);
-				if(p.getmCode().equals(code.toUpperCase())){
-					if(mPizzas.remove(i) != null){
-						System.out.println("la pizza "+p+"a bien été supprimer" );
-					}
-				}
-			}
-		}
-	}
-	public void update(){
-		System.out.println("Veuillez choisir la pizza à modifier :");
-		afficher();
-		System.out.println("(99 pour abandonnér)");
-		String code = PizzeriaAdminConsoleApp.sScanner.next();
-		if(!code.equals("99")){
-			for (Pizza p : mPizzas){
-				if(p.getmCode().equals(code.toUpperCase())){
-					System.out.println("Veuillez saisir le nouveau code :");
-					p.setmCode(PizzeriaAdminConsoleApp.sScanner.next());
-					System.out.println("Veuillez saisir le nouveau nom :");
-					p.setmNom(PizzeriaAdminConsoleApp.sScanner.next());
-					System.out.println("Veuillez saisir le nouveau prix:");
-					p.setmPrix(PizzeriaAdminConsoleApp.sScanner.nextDouble());
-					
-				}
-			}
-		}
-	}
 
-	public void addPizza(){
-		Pizza newPizza = new Pizza();
-		System.out.println("Veuillez saisir un CODE");
-		newPizza.setmCode(PizzeriaAdminConsoleApp.sScanner.next());
-		System.out.println("Veuillez saisir un NOM");
-		newPizza.setmNom(PizzeriaAdminConsoleApp.sScanner.next());
-		System.out.println("Veuillez saisir un PRIX");
-		newPizza.setmPrix(PizzeriaAdminConsoleApp.sScanner.nextDouble());
-		mPizzas.add(newPizza);
-	}
-	public void afficher(){
-		for(Pizza p : mPizzas){
-			System.out.println(p.toString());
-		}
-	}*/
 
 }

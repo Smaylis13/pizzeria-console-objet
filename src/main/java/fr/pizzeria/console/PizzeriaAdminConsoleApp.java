@@ -1,30 +1,29 @@
 package fr.pizzeria.console;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Scanner;
 
-import javax.naming.directory.ModificationItem;
-import javax.sound.midi.Soundbank;
+import org.slf4j.*;
 
 import fr.pizzeria.dao.PizzaDao;
-import fr.pizzeria.exception.SavePizzaException;
 import fr.pizzeria.ihm.AjouterPizzaOptionMenu;
 import fr.pizzeria.ihm.ListerPizzasOptionMenu;
 import fr.pizzeria.ihm.ModifierPizzaOptionMenu;
 import fr.pizzeria.ihm.OptionMenu;
 import fr.pizzeria.ihm.SupprimerPizzaOptionMenu;
+import fr.pizzeria.persistence.DbManager;
 
 public class PizzeriaAdminConsoleApp {
 	public static final Scanner sScanner = new Scanner(System.in);
+	public static final Logger LOG = LoggerFactory.getLogger(PizzeriaAdminConsoleApp.class);
 
-	public static void main(String... args) throws SavePizzaException {
+	public static void main(String... args) {
 
-		OptionMenu optionMenu;
 		PizzaDao pizzaDao = new PizzaDao();
+		
+		
 
 		sScanner.useLocale(Locale.US);// Pour pouvoir utiliser le point et la
 										// virgule aussi
@@ -38,33 +37,26 @@ public class PizzeriaAdminConsoleApp {
 				afficherMenu();
 				OptionMenu choix = options.get(sScanner.nextInt());
 				if (choix == null) {
-					System.out.println("Merci de votre visite :)  Aurevoir \u2639.");
+					LOG.info("Merci de votre visite :)  Aurevoir \u2639.");
 					return;
 				}
-				System.out.println(choix.getLibelle());
+				LOG.info(choix.getLibelle());
 				choix.execute();
 
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			LOG.error(e.getMessage(),e);
 		} finally {
+			new DbManager().close();
+			LOG.info("DB Manger closed");
 			sScanner.close();
 		}
 	}
 
-	/*
-	 * private static void initListPizza(List<Pizza> pPizzas){ pPizzas.add(new
-	 * Pizza("PEP", "Pépéroni", 12.5)); pPizzas.add(new Pizza( "MAR",
-	 * "Margherita" ,14.00)); pPizzas.add(new Pizza( "REIN", "La Reine",
-	 * 11.50)); pPizzas.add(new Pizza( "FRO", "La 4 fromages", 12.00));
-	 * pPizzas.add(new Pizza( "CAN", "La cannibale", 12.50)); pPizzas.add(new
-	 * Pizza( "SAV" ,"La savoyarde" ,13.00)); pPizzas.add(new Pizza( "ORI",
-	 * "L’orientale" ,13.50)); pPizzas.add(new Pizza( "IND", "L’indienne",
-	 * 14.00)); }
-	 */
-	public static void afficherMenu() {
 
-		System.out.println("\n***** Pizzeria Administration *****" + "\n\t 1. Lister les pizzas"
+	private static void afficherMenu() {
+
+		LOG.info("\n***** Pizzeria Administration *****" + "\n\t 1. Lister les pizzas"
 				+ "\n\t 2. Ajouter une nouvelle pizza" + "\n\t 3. Mettre à jour une pizza"
 				+ "\n\t 4. Supprimer une pizza" + "\n\t 99. Sortir");
 	}

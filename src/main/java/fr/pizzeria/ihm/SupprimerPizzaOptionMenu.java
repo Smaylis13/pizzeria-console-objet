@@ -5,13 +5,11 @@ import java.util.List;
 import fr.pizzeria.console.Pizza;
 import fr.pizzeria.console.PizzeriaAdminConsoleApp;
 import fr.pizzeria.dao.IPizzaDao;
-import fr.pizzeria.dao.PizzaDao;
 
 public class SupprimerPizzaOptionMenu extends OptionMenu {
 
 	@Override
 	public String getLibelle() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 	public SupprimerPizzaOptionMenu(IPizzaDao pDao){
@@ -19,8 +17,6 @@ public class SupprimerPizzaOptionMenu extends OptionMenu {
 	}
 	@Override
 	public void execute() {
-		// TODO Auto-generated method stub
-		//PizzaDao pizzaDao = new PizzaDao();
 		List<Pizza> lListPizza = mDao.findAllPizzas();
 		System.out.println("Veuillez choisir la pizza à supprimer :");
 		afficherListPizzas(lListPizza);

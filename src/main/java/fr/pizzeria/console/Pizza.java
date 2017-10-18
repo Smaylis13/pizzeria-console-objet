@@ -1,34 +1,48 @@
 package fr.pizzeria.console;
 
-
 import java.lang.reflect.Field;
 
-import fr.pizzeria.dao.IPizzaDao;
+import javax.persistence.*;
+
 import fr.pizzeria.model.CategoriePizza;
 import fr.pizzeria.model.ToString;
 /**
  * 
- * @author ETY23
+ * @author IG
  *
  */
+@Entity
 public class Pizza {
+	
+	@Id
+	@Column(name="ID")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int mId;
 	
+	public int getId() {
+		return mId;
+	}
 	@ToString
+	@Column(name="codepizza")
 	private String mCode;
 	
 	@ToString(uppercase=true)
+	@Column(name="namePizza")
 	private String mNom;
 	
+	@Column(name="price")
 	private double mPrix;
 	/**
 	 * sID un id static qui s'incrémente à chaque ajout de pizza 
 	 */
 	private static int sID = 0;
+	
+	@Column(name="fk_categorie")
 	CategoriePizza mCategorie;
+	
 	public Pizza(String pCode,String pNom, double pPrix){
-		  mId = sID;
-		  sID++;
+		  //mId = sID;
+		  //sID++;
 		  mCode = pCode;
 		  mNom = pNom;
 		  mPrix = pPrix;
@@ -36,6 +50,10 @@ public class Pizza {
 	public Pizza(String pCode,String pNom, double pPrix, CategoriePizza pCategorie) {
 		this(pCode, pNom, pPrix);
 		mCategorie = pCategorie;
+	}
+	public Pizza(int pID, String pCode,String pNom, double pPrix){
+		this(pCode, pNom, pPrix);
+		mId = pID;
 	}
 	
 	public CategoriePizza getmCategorie() {
@@ -46,8 +64,6 @@ public class Pizza {
 		return this;
 	}
 	public Pizza() {
-		// TODO Auto-generated constructor stub
-		this("EEE","EEEEEE",0.2);
 	}
 
 
@@ -95,29 +111,28 @@ public class Pizza {
 	}
 	@Override
 	public String toString() {
-		// TODO Auto-generated method stub
-		String returnString = " ";
-		///String returnString = mCode+" -> "+mNom+" ("+String.format("%.2f", mPrix)+"€) Catégorie : " + mCategorie;
+		StringBuilder returnString = new StringBuilder();
+
 		for (Field f : this.getClass().getDeclaredFields()){
 			try{
 				if( f.get(this) instanceof String){
 					if(f.getAnnotation(ToString.class) != null && f.getAnnotation(ToString.class).uppercase()){
 						String tmp = (String) f.get(this);
-						returnString +=  tmp.toUpperCase()+ " ";
+						returnString.append(tmp.toUpperCase()+ " ");
 					}else{
-						returnString +=  (String) f.get(this) + " ";
+						returnString.append((String) f.get(this) + " ");
 					}
 				}else{
 					if( f.getName().equals("mPrix"))
-						returnString += " ("+String.format("%.2f", mPrix)+"€) " ;
+						returnString.append(" ("+String.format("%.2f", mPrix)+"€) " );
 					else if (f.getName().equals("mCategorie"))
-						returnString +=  f.get(this);
+						returnString.append(f.get(this));
 				}
 			}catch (Exception e) {
 				e.getStackTrace();
 			}
 		}
-		return returnString;
+		return returnString.toString();
 	}
 
 
