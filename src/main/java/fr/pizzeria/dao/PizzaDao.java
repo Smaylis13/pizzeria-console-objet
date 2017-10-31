@@ -18,6 +18,7 @@ import javax.persistence.Query;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Repository;
 
 import fr.pizzeria.console.Pizza;
 import fr.pizzeria.console.PizzeriaAdminConsoleApp;
@@ -30,6 +31,7 @@ import fr.pizzeria.persistence.DbManager;
  *
  *
  */
+@Repository
 public class PizzaDao implements IPizzaDao {
 
 	private List<Pizza> mListPizza;

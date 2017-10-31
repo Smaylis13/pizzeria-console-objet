@@ -4,9 +4,17 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import javax.annotation.PostConstruct;
 
 import org.slf4j.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.stereotype.Controller;
 
+import ch.qos.logback.core.Context;
+import fr.pizzeria.config.ServiceConfig;
 import fr.pizzeria.dao.PizzaDao;
 import fr.pizzeria.ihm.AjouterPizzaOptionMenu;
 import fr.pizzeria.ihm.ListerPizzasOptionMenu;
@@ -15,23 +23,37 @@ import fr.pizzeria.ihm.OptionMenu;
 import fr.pizzeria.ihm.SupprimerPizzaOptionMenu;
 import fr.pizzeria.persistence.DbManager;
 
+@Controller
 public class PizzeriaAdminConsoleApp {
-	public static final Scanner sScanner = new Scanner(System.in);
-	public static final Logger LOG = LoggerFactory.getLogger(PizzeriaAdminConsoleApp.class);
 
-	public static void main(String... args) {
+	@Autowired
+	private Scanner sScanner;
+	
+	@Autowired
+	private PizzaDao pizzaDao;
 
-		PizzaDao pizzaDao = new PizzaDao();
-		
-		
+	@Autowired
+	public Logger LOG;
 
-		sScanner.useLocale(Locale.US);// Pour pouvoir utiliser le point et la
-										// virgule aussi
-		Map<Integer, OptionMenu> options = new HashMap<>();
-		options.put(1, new ListerPizzasOptionMenu(pizzaDao));
-		options.put(2, new AjouterPizzaOptionMenu(pizzaDao));
-		options.put(3, new ModifierPizzaOptionMenu(pizzaDao));
-		options.put(4, new SupprimerPizzaOptionMenu(pizzaDao));
+	private Map<Integer, OptionMenu> options = new HashMap<>();
+	
+	@Autowired
+	AnnotationConfigApplicationContext context;
+
+	@PostConstruct
+	public void init() {
+		AtomicInteger incr = new AtomicInteger();
+		context.getBeansOfType(OptionMenu.class)
+		.forEach((idSpring, option) -> {
+			options.put(incr.incrementAndGet(), option);
+		});
+	}
+
+	/**
+	 * Démmarage de l'application
+	 */
+	public void demarrer() {
+		sScanner.useLocale(Locale.US);
 		try {
 			while (true) {
 				afficherMenu();
@@ -45,7 +67,7 @@ public class PizzeriaAdminConsoleApp {
 
 			}
 		} catch (Exception e) {
-			LOG.error(e.getMessage(),e);
+			LOG.error(e.getMessage(), e);
 		} finally {
 			new DbManager().close();
 			LOG.info("DB Manger closed");
@@ -53,12 +75,15 @@ public class PizzeriaAdminConsoleApp {
 		}
 	}
 
+	private void afficherMenu() {
 
-	private static void afficherMenu() {
+		LOG.info("***** Pizzeria Administration *****");
+		options.forEach((cle, option) -> {
+			LOG.info(cle + ". " + option.getLibelle());
+			
+		});
 
-		LOG.info("\n***** Pizzeria Administration *****" + "\n\t 1. Lister les pizzas"
-				+ "\n\t 2. Ajouter une nouvelle pizza" + "\n\t 3. Mettre à jour une pizza"
-				+ "\n\t 4. Supprimer une pizza" + "\n\t 99. Sortir");
+		
 	}
 
 }
